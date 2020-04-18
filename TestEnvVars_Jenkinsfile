@@ -1,0 +1,141 @@
+// Global variables
+TEST_GLOBAL_VAR="test"
+
+node {
+    // Variables defined in this node block (pseudo global)
+    def PROJECTPATH="SNA/packaging"
+    def SPEC="sna-nativeinstall.spec"
+    def NOT_PASSED_IN="blah"
+
+    properties([
+        parameters([
+            booleanParam(
+                defaultValue: true,
+                description: 'bool param test',
+                name: 'BOOL_PARAM'
+            ),
+            string(
+                defaultValue: '    ',
+                description: 'empty string param test',
+                name: 'SNA_REL', trim: false
+            ),
+            choice(
+                choices: ['NEXUS', 'LOCAL'],
+                description: 'choice param test',
+                name: 'RPM_LOC'
+            ),
+            string(
+                defaultValue: '2.0.0',
+                description: 'non-empty string param',
+                name: 'SNA_VER',
+                trim: false
+            )
+        ])
+    ])
+
+    stage('TestEnvVars') {
+        if("$params.boolArg" == "true") {
+            echo "boolArg == true"
+        }
+
+        if("$params.boolArg" == "false") {
+            echo "boolArg == false"
+        }
+
+        // Print outside withEnv
+        echo "Outside withEnv:"
+        echo "params.SNA_REL: '$params.SNA_REL'"
+        echo "SNA_REL       : '$SNA_REL'"
+        echo "params.SNA_VER: '$params.SNA_VER'"
+        echo "SNA_VER       : '$SNA_VER'"
+        echo "params.RPM_LOC: '$params.RPM_LOC'"
+        echo "RPM_LOC       : '$RPM_LOC'"
+        echo "PROJECTPATH   : '$PROJECTPATH'"
+        echo "SPEC          : '$SPEC'"
+        echo "GLOBAL_VAR    : '$TEST_GLOBAL_VAR'"
+
+        withEnv(["SNA_REL=$params.SNA_REL",
+                "SNA_VER=$params.SNA_VER",
+                "RPM_LOC=$params.RPM_LOC",
+                "PROJECTPATH=$PROJECTPATH",
+                "SPEC=$SPEC"]) {
+            sh '''
+                set +x
+                echo "Inside shell:"
+                echo "SNA_REL       : '$SNA_REL'"
+                echo "SNA_VER       : '$SNA_VER'"
+                echo "RPM_LOC       : '$RPM_LOC'"
+                echo "PROJECTPATH   : '$PROJECTPATH'"
+                echo "SPEC          : '$SPEC'"
+                echo
+                env | sort
+            '''
+        }
+
+        echo ""
+        echo "Printing lowercase versions of parameters..."
+        echo ""
+
+        withEnv(["snarel=$params.SNA_REL",
+                "snaver=$params.SNA_VER",
+                "rpmloc=$params.RPM_LOC",
+                "projectpath=$PROJECTPATH",
+                "spec=$SPEC"]) {
+            sh '''
+                set +x
+                echo "Inside shell:"
+                echo "SNA_REL       : '$SNA_REL'"
+                echo "SNA_VER       : '$SNA_VER'"
+                echo "RPM_LOC       : '$RPM_LOC'"
+                echo "PROJECTPATH   : '$PROJECTPATH'"
+                echo "SPEC          : '$SPEC'"
+                echo "snarel        : '$snarel'"
+                echo "snaver        : '$snaver'"
+                echo "rpmloc        : '$rpmloc'"
+                echo "projectpath   : '$projectpath'"
+                echo "spec          : '$spec'"
+                echo
+                echo "BOOL_PARAM: $BOOL_PARAM"
+                BOOL_PARAM=false
+                echo "BOOL_PARAM: $BOOL_PARAM"
+                echo
+                env | sort
+            '''
+        }
+        println "params.SNA_VER class type:"
+        println params.SNA_VER.getClass()
+        println "params.RPM_LOC class type:"
+        println params.RPM_LOC.getClass()
+        println "params.BOOL_PARAM class type:"
+        println params.BOOL_PARAM.getClass()
+        if(params.BOOL_PARAM instanceof java.lang.Boolean) echo "BOOLEAN!"
+
+        someFunction(params.SNA_REL, params.BOOL_PARAM, params.SNA_VER)
+    }
+}
+
+def someFunction(stringArg, boolArg, stringArg2) {
+    //def Binding binding = Binding.getBinding()
+    println "stringArg class type:"
+    println stringArg.getClass()
+    println "boolArg class type:"
+    println boolArg.getClass()
+    println "stringArg2 class type:"
+    println stringArg2.getClass()
+    if (! (boolArg instanceof Boolean) ) echo "boolArg invalid"
+    if (((Boolean) boolArg).booleanValue() == true ) echo "boolArg true"
+    if (((Boolean) boolArg).booleanValue() == false ) echo "boolArg false"
+    echo "boolArg dunno"
+
+    if(!stringArg)
+        throw new Exception("someFunction: An empty stringArg passed")
+    if(!boolArg instanceof java.lang.Boolean)
+        throw new Exception("someFunction: An empty boolArg passed")
+    if(!stringArg2)
+        throw new Exception("someFunction: An empty stringArg2 passed")
+
+    echo "Successfully parsed vars:"
+    echo "stringArg : '$stringArg'"
+    echo "boolArg   : '$boolArg'"
+    echo "stringArg : '$stringArg2'"
+}

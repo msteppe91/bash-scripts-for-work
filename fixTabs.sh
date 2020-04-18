@@ -43,7 +43,7 @@ while [[ ${#} -gt 0 ]]; do
                 echo -e  "Exiting...${RESET}"
                 echo
                 usage
-                exit 1                
+                exit 1
             fi
             ;;
         -s)
