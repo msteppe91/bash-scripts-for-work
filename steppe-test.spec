@@ -10,7 +10,7 @@
 
 Name:           steppe-test
 Version:        0.0.1
-Release:        1.0.gr3%{?dist}
+Release:        %{rel}%{?dist}
 Summary:        Test RPM for testing yum functionality
 
 License:        None
