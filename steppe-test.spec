@@ -12,13 +12,10 @@ Name:           steppe-test
 Version:        0.0.1
 Release:        %{rel}%{?dist}
 Summary:        Test RPM for testing yum functionality
-
 License:        None
 URL:            https://github.com/msteppe91/bash-scripts
-#Source0:
-
-#BuildRequires:
-#Requires:
+#BuildRequires:  /tmp/testBuildRequires
+#Requires:       /tmp/testRequires
 
 %description
 This RPM is purely used to test yum functionality when installed/uninstalled
@@ -28,10 +25,14 @@ This RPM is purely used to test yum functionality when installed/uninstalled
 %build
 
 %install
+touch testRequires
+mkdir -p %{buildroot}/tmp/
+install testRequires %{buildroot}/tmp
 
 %clean
 
 %files
+/tmp/testRequires
 
 %changelog
 * Mon Apr 27 2020 Michael Steppe <msteppe91@users.noreply.github.com>

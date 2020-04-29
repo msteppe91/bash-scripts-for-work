@@ -8,5 +8,6 @@
 1. 0.0.1-1.abc.fc32
 1. 0.0.1-1.Abc.fc32
 1. 0.0.1-0.2004270916.fc32
-- [ ] RPM requiring a file instead of package
+- [x] RPM requiring a file instead of package
+- Works if and only if the file is owned by another RPM
 - [ ] Better way of sharing preferences for vscode/etc. between work and home
